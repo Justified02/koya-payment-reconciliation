@@ -1,3 +1,4 @@
+
 import json
 from datetime import datetime
 from decimal import Decimal
@@ -13,9 +14,7 @@ def reconcile():
     payments = {}
     base_dir = Path(__file__).resolve().parent
 
-    with (base_dir / "payments.jsonl").open(
-        encoding="utf-8"
-    ) as file:
+    with (base_dir / "payments.jsonl").open(encoding="utf-8") as file:
         for line in file:
             try:
                 event = json.loads(line)
@@ -41,20 +40,14 @@ def reconcile():
         if event.get("status") == "success"
     ]
 
-    for event in successful:
-        try:
-            Decimal(str(event["amount"]))
-        except Exception:
-            print("Invalid amount:", repr(event.get("amount")))
-            print("Event:", event)
-
     total = sum(
-    (
-        Decimal(str(event["amount"]).replace(",", ""))
-        for event in successful
-    ),
-    Decimal("0"),
-)
+        (
+            Decimal(str(event["amount"]).replace(",", ""))
+            for event in successful
+        ),
+        Decimal("0"),
+    )
+
     count = len(successful)
 
     with (base_dir / "expected.txt").open(encoding="utf-8") as file:
